@@ -1,0 +1,164 @@
+version: 2.1
+
+commands:
+jobs:
+  build-frontend:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - checkout
+      - restore_cache:
+          keys: [frontend-build]
+      - run:
+          name: Build front-end
+          command: |
+            # Your code here 
+            cd frontend
+            npm install
+            npm run build 
+      - save_cache:
+          paths: [frontend/node_modules]
+          key: frontend-build
+
+  build-backend:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - checkout
+      - restore_cache:
+          keys: [backend-build]
+      - run:
+          name: Back-end build
+          command: |
+           # Your code here
+           cd backend
+           npm install
+           npm run build
+      - save_cache:
+          paths: [backend/node_modules]
+          key: backend-build
+
+  test-frontend:
+    docker:
+      # Docker image here
+      - image: circleci/node:13.8.0
+    steps:
+      # Checkout code from git
+      - checkout
+      # Restore from cache
+
+      - restore_cache:
+          keys: [frontend-test]
+      # Your job code here
+      - run:
+          name: frontend Test
+          command: |
+           # Your code here
+           cd frontend
+           npm install
+           npm run Test
+      - save_cache:
+          paths: [frontend/node_modules]
+          key: frontend-Test  
+  test-backend:
+    docker:
+      # Docker image here
+      - image: circleci/node:13.8.0
+    steps:
+    # checkout code from git 
+      - checkout
+      # Restore from cache
+
+      - restore_cache:
+          keys: [Backend-test]
+      # Your job code here
+      - run:
+          name: Backend Test
+          command: |
+           # Your code here
+           cd backend
+           npm install
+           npm run Test
+      - save_cache:
+          paths: [Backend/node_modules]
+          key: Backend-Test  
+            
+  scan-frontend:
+    docker:
+      # Docker image here
+      - image: circleci/node:13.8.0
+    steps:
+      # checkout code from git 
+      - checkout
+      # Restore from cache
+      - restore_cache:
+          keys: [Scanfrontend-test]
+      # Your job code here
+      - run:
+          name: Scan-frontend 
+          command: |
+           # Your code here
+            cd frontend
+            npm install
+            npm audit fix --force --audit-level=critical
+            npm audit --audit-level=critical
+      - save_cache:
+          paths: [frontend/node_modules]
+          key: Scanfrontend-Test  
+
+  scan-backend:
+    docker:
+       - image: circleci/node:13.8.0
+    steps:
+      # checkout code from git 
+      - checkout
+      # Restore from cache
+
+      - restore_cache:
+          keys: [Scan-Backend-test]
+      # Your job code here
+      - run:
+          name: Scan-Backend 
+          command: |
+           # Your code here
+            cd Backend
+            npm install
+            npm audit fix --force --audit-level=critical
+            npm audit fix --force --audit-level=critical
+            npm audit --audit-level=critical
+      - save_cache:
+          paths: [BAckend/node_modules]
+          key: ScanBackend-Test  
+          
+workflows:
+  default:
+    jobs:
+      - build-frontend
+      - build-backend
+      - test-frontend:
+          requires: [build-frontend]
+      - test-backend:
+          requires: [build-backend]
+      - scan-backend:
+          requires: [build-backend]
+      - scan-frontend:
+          requires: [build-frontend]
+      # - deploy-infrastructure:
+      #     requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+      #     filters:
+      #       branches:
+      #         only: [test-feature-branch]
+      # - configure-infrastructure:
+      #     requires: [deploy-infrastructure]
+      # - run-migrations:
+      #     requires: [configure-infrastructure]
+      # - deploy-frontend:
+      #     requires: [run-migrations]
+      # - deploy-backend:
+      #     requires: [run-migrations]
+      # - smoke-test:
+      #     requires: [deploy-backend, deploy-frontend]
+      # - cloudfront-update:
+      #     requires: [smoke-test]
+      # - cleanup:
+      #     requires: [cloudfront-update]
