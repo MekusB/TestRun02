@@ -56,7 +56,7 @@ jobs:
            # Your code here
            cd frontend
            npm install
-           npm run build
+           npm run test
       - save_cache:
           paths: [frontend-test/node_modules]
           key: frontend-test  
@@ -78,7 +78,7 @@ jobs:
            # Your code here
            cd backend
            npm install
-           npm run build
+           npm run test
       - save_cache:
           paths: [Backend-test/node_modules]
           key: Backend-Test  
