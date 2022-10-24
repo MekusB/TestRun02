@@ -123,8 +123,7 @@ jobs:
            # Your code here
             cd Backend
             npm install
-            npm audit fix --audit-level=critical --force
-            npm audit --audit-level=critical
+            npm audit fix --audit-level=critical --force 
       - save_cache:
           paths: [backend/node_modules]
           key: Scanbackend-Test  
